@@ -12,6 +12,8 @@ public class Client {
     private ArrayList<BankAccount> _accounts = new ArrayList<>();
     private ArrayList<String> _notifications = new ArrayList<>();
 
+    public Client() {}
+
     public Client(String name, String surname, String phone)
     {
         _name = name;
@@ -39,6 +41,8 @@ public class Client {
         return _phone;
     }
 
+    public ArrayList<BankAccount> get_accounts() {return _accounts;}
+
     public void AddAddress(String address)
     {
         _address = address;
@@ -48,6 +52,7 @@ public class Client {
     {
         if (passport.length() != 10)
         {
+            throw new RuntimeException("Серия и номер паспорта должны вводится 10ю цифрами без пробелов!");
         }
 
         _passport = passport;

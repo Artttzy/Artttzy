@@ -18,6 +18,8 @@ public class Bank {
     private ArrayList<CreditAccountImpl> _creditAccounts = new ArrayList<>();
     private ArrayList<Client> _clients = new ArrayList<>();
 
+    public Bank() {}
+
     public Bank(int id, String name, String address)
     {
         _id = id;
