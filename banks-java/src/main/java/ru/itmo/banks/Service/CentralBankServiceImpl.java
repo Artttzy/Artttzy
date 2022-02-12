@@ -1,6 +1,7 @@
 package ru.itmo.banks.Service;
 
 import ru.itmo.banks.Entities.*;
+import ru.itmo.banks.Exceptions.CentralBankServiceException;
 import ru.itmo.banks.Interfaces.BankAccount;
 import ru.itmo.banks.Interfaces.CentralBankService;
 
@@ -54,6 +55,7 @@ public class CentralBankServiceImpl implements CentralBankService {
         _clients.add(client);
         return client;
     }
+
     public void AddClientAdress(Client client, String address)
     {
         client.AddAddress(address);
@@ -186,11 +188,15 @@ public class CentralBankServiceImpl implements CentralBankService {
 
     public void CheckSuspicion(BankAccount acc, double sum)
     {
-        if (acc.get_client().CheckSuspicion() == true)
+        if (acc.get_client().CheckSuspicion())
         {
             if (acc.get_bank().get_suspiciousLimit() < sum)
             {
-                throw new RuntimeException("Аккаунт подозрительный и сумма вывода выше лимита!");
+                try {
+                    throw new CentralBankServiceException("Аккаунт подозрительный и сумма вывода выше лимита!");
+                } catch (CentralBankServiceException e) {
+                    System.out.println(e.getMessage());
+                }
             }
         }
     }
@@ -204,35 +210,41 @@ public class CentralBankServiceImpl implements CentralBankService {
     {
         Client client = new Client();
         for (Client _client : _clients) {
-            if (phone == _client.get_phone()) {
+            if (phone.equals(_client.get_phone())) {
                 client = _client;
             }
         }
-        if (client != null)
+        if (client.get_name() != null)
         {
             return client;
         }
         else
         {
-            throw new RuntimeException("Клиент не найден!");
+            try {
+                throw new CentralBankServiceException("Клиент не найден!");
+            } catch (CentralBankServiceException e) {
+                System.out.println(e.getMessage());
+                return null;
+            }
         }
     }
 
-    public Bank FindBank(String name)
-    {
+    public Bank FindBank(String name) {
         Bank bank = new Bank();
         for (Bank _bank : _banks) {
-            if (name == _bank.get_name()) {
+            if (name.equals(_bank.get_name())) {
                 bank = _bank;
             }
         }
-        if (bank != null)
-        {
+        if (bank.get_name() != null) {
             return bank;
-        }
-        else
-        {
-            throw new RuntimeException("Банк не найден!");
+        } else {
+            try {
+                throw new CentralBankServiceException("Банк не найден!");
+            } catch (CentralBankServiceException e) {
+                System.out.println(e.getMessage());
+                return null;
+            }
         }
     }
 }

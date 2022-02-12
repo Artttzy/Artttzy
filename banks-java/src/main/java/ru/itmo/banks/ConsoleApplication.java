@@ -16,19 +16,20 @@ public class ConsoleApplication {
 
     public static void RegistrateBank() {
         System.out.println("Введите название банка.");
-        String name = scanner.next();
+        scanner.nextLine();
+        String name = scanner.nextLine();
         System.out.println("Введите адрес банка.");
-        String address = scanner.next();
+        String address = scanner.nextLine();
         _centralBank.RegistrateBank(name, address);
     }
 
     public static void SetBankConditions() {
         System.out.println("Введите название банка, в котором вы бы хотели изменить условия.");
-        String bankName = scanner.next();
+        scanner.nextLine();
+        String bankName = scanner.nextLine();
         var bank = _centralBank.FindBank(bankName);
         System.out.println("Вы хотите изменить дебетовые условия?");
         String ans = scanner.next();
-        System.out.println(ans);
         if (ans.equals("Да")) {
             System.out.println("Введите процент на остаток.");
             double percent = scanner.nextDouble() / 100;
@@ -81,7 +82,8 @@ public class ConsoleApplication {
         String ans = scanner.next();
         if (ans.equals("Да")) {
             System.out.println("Введите адрес клиента.");
-            String address = scanner.next();
+            scanner.nextLine();
+            String address = scanner.nextLine();
             _centralBank.AddClientAdress(client, address);
         }
 
@@ -106,7 +108,7 @@ public class ConsoleApplication {
         var client = _centralBank.FindClient(phone);
         if (client == null) throw new RuntimeException("Пользователь не найден!");
         for (BankAccount acc : client.get_accounts()) {
-            System.out.println("Id счета: " + acc.get_id() + " Тип счета: " + acc.get_type() + " Банк счета: " + acc.get_bank() +
+            System.out.println("Id счета: " + acc.get_id() + " Тип счета: " + acc.get_type() + " Банк счета: " + acc.get_bank().get_name() +
                     " Состояние счета: " + acc.get_funds());
         }
     }
@@ -218,10 +220,10 @@ public class ConsoleApplication {
         int select = 0;
         while (select != 17) {
             System.out.println(
-                    "Выберите опцию: 1 - Зарегистрировать банк; 2 - Установить условия счетов в банке; 3 - Зарегистрировать клиента; 4 - Добавить информацию по клиенту; " +
-                            "5 - Посмотреть список банков; 6 - Посмотреть список счетов клиента; 7 - Открыть дебетовый счет; " +
-                            "8 - Открыть депозитный счет; 9 - Открыть кредитный счет; 10 - Вывести средства; 11 - Внести средства; " +
-                            "12 - Перевести средства; 13 - Получить историю операций по счету; 14 - Отменить операцию; " +
+                    "Выберите опцию: 1 - Зарегистрировать банк; 2 - Установить условия счетов в банке; 3 - Зарегистрировать клиента; 4 - Добавить информацию по клиенту; \n" +
+                            "5 - Посмотреть список банков; 6 - Посмотреть список счетов клиента; 7 - Открыть дебетовый счет; \n" +
+                            "8 - Открыть депозитный счет; 9 - Открыть кредитный счет; 10 - Вывести средства; 11 - Внести средства; \n" +
+                            "12 - Перевести средства; 13 - Получить историю операций по счету; 14 - Отменить операцию; \n" +
                             "15 - Перемотать время; 16 - Посмотреть уведомления пользователя; 17 - Выход");
             select = (int) scanner.nextInt();
             switch (select) {
