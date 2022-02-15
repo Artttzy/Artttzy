@@ -6,106 +6,106 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Bank {
-    private int _id;
-    private String _name;
-    private String _address;
-    private double _debitPercent;
-    private double _creditCommission;
-    private double _suspiciousLimit;
-    private Map<Double,Double> _depositPercentDictionary = new HashMap<>();
-    private ArrayList<DepositAccountImpl> _depositAccounts = new ArrayList<>();
-    private ArrayList<DebitAccountImpl> _debitAccounts = new ArrayList<>();
-    private ArrayList<CreditAccountImpl> _creditAccounts = new ArrayList<>();
+    private int id;
+    private String name;
+    private String address;
+    private double debitPercent;
+    private double creditCommission;
+    private double suspiciousLimit;
+    private Map<Double,Double> depositPercentDictionary = new HashMap<>();
+    private ArrayList<DepositAccountImpl> depositAccounts = new ArrayList<>();
+    private ArrayList<DebitAccountImpl> debitAccounts = new ArrayList<>();
+    private ArrayList<CreditAccountImpl> creditAccounts = new ArrayList<>();
     private ArrayList<Client> _clients = new ArrayList<>();
 
     public Bank() {}
 
     public Bank(int id, String name, String address)
     {
-        _id = id;
-        _name = name;
-        _address = address;
+        this.id = id;
+        this.name = name;
+        this.address = address;
     }
     public int get_id() {
-        return _id;
+        return id;
     }
 
     public String get_name() {
-        return _name;
+        return name;
     }
 
     public String get_address() {
-        return _address;
+        return address;
     }
 
     public double get_creditCommission() {
-        return _creditCommission;
+        return creditCommission;
     }
 
     public double get_debitPercent() {
-        return _debitPercent;
+        return debitPercent;
     }
 
     public double get_suspiciousLimit() {
-        return _suspiciousLimit;
+        return suspiciousLimit;
     }
 
     public Map<Double, Double> get_depositPercentDictionary() {
-        return _depositPercentDictionary;
+        return depositPercentDictionary;
     }
 
-    public void AddClient(Client client)
+    public void addClient(Client client)
     {
         _clients.add(client);
     }
-    public void AddDebitAccount(DebitAccountImpl acc)
+    public void addDebitAccount(DebitAccountImpl acc)
     {
-        _debitAccounts.add(acc);
+        debitAccounts.add(acc);
     }
 
-    public void AddDepositAccount(DepositAccountImpl acc)
+    public void addDepositAccount(DepositAccountImpl acc)
     {
-        _depositAccounts.add(acc);
+        depositAccounts.add(acc);
     }
 
-    public void AddCreditAccount(CreditAccountImpl acc)
+    public void addCreditAccount(CreditAccountImpl acc)
     {
-        _creditAccounts.add(acc);
+        creditAccounts.add(acc);
     }
 
-    public void SetDepositConditions(Map<Double, Double> percents)
+    public void setDepositConditions(Map<Double, Double> percents)
     {
-        _depositPercentDictionary = percents;
+        depositPercentDictionary = percents;
         for (Client client : _clients)
         {
-            client.AddNotification("Deposit conditions has updated!");
+            client.addNotification("Deposit conditions has updated!");
         }
     }
 
-    public void SetDebitConditions(double percent)
+    public void setDebitConditions(double percent)
     {
-        _debitPercent = percent;
+        debitPercent = percent;
         for (Client client : _clients)
         {
-            client.AddNotification("Debit conditions has updated!");
+            client.addNotification("Debit conditions has updated!");
         }
     }
 
-    public void SetCreditConditions(double commission)
+    public void setCreditConditions(double commission)
     {
-        _creditCommission = commission;
+        creditCommission = commission;
         for (Client client : _clients)
         {
-            client.AddNotification("Credit conditions has updated!");
+            client.addNotification("Credit conditions has updated!");
         }
     }
 
-    public void SetSuspiciousConditions(double limit)
+    public void setSuspiciousConditions(double limit)
     {
-        _suspiciousLimit = limit;
+        suspiciousLimit = limit;
         for (Client client : _clients)
         {
-            client.AddNotification("Suspicious conditions has updated!");
+            client.addNotification("Suspicious conditions has updated!");
         }
     }
 }

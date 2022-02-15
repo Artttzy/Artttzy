@@ -1,96 +1,109 @@
 package ru.itmo.banks.Entities;
 
+import ru.itmo.banks.Exceptions.CentralBankServiceException;
+import ru.itmo.banks.Exceptions.DepositAccountNotClosedCentralBankServiceException;
+import ru.itmo.banks.Exceptions.LackOfFundsCentralBankServiceException;
 import ru.itmo.banks.Interfaces.BankAccount;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class DepositAccountImpl implements BankAccount {
-    private int _id;
-    private int _endMonths;
-    private double _funds = 0;
-    private double _percent;
-    private Bank _bank;
-    private Client _client;
-    private String _type;
-    private Map<Integer, Double> _operationsHistory = new HashMap<>();
+    private int id;
+    private int endMonths;
+    private double funds = 0;
+    private double percent;
+    private Bank bank;
+    private Client client;
+    private String type;
+    private Map<Integer, Double> operationsHistory = new HashMap<>();
 
     public DepositAccountImpl(int id, double firstSum, double percent, int months)
     {
-        _id = id;
-        _funds += firstSum;
-        _percent = percent;
-        _endMonths = months;
-        _type = "Депозитный счет";
+        this.id = id;
+        this.funds += firstSum;
+        this.percent = percent;
+        this.endMonths = months;
+        this.type = "Депозитный счет";
     }
 
     public int get_id() {
-        return _id;
+        return id;
     }
 
     public String get_type() {
-        return _type;
+        return type;
     }
 
     public Map<Integer, Double> get_operationsHistory() {
-        return _operationsHistory;
+        return operationsHistory;
     }
 
     public Bank get_bank() {
-        return _bank;
+        return bank;
     }
 
     public void set_bank(Bank _bank) {
-        this._bank = _bank;
+        this.bank = _bank;
     }
 
     public Client get_client() {
-        return _client;
+        return client;
     }
 
     public void set_client(Client _client) {
-        this._client = _client;
+        this.client = _client;
     }
 
     public double get_funds() {
-        return _funds;
+        return funds;
     }
 
     public void set_funds(double _funds) {
-        this._funds = _funds;
+        this.funds = _funds;
     }
 
-    public double get_percent() {return _percent;}
+    public double get_percent() {return percent;}
 
-    public int get_endMonths() {return _endMonths;}
+    public int get_endMonths() {return endMonths;}
 
-    public void set_endMonths(int _endMonths) {this._endMonths = _endMonths;}
+    public void set_endMonths(int _endMonths) {this.endMonths = _endMonths;}
 
-    public void Withdraw(double sum) {
-        if (_endMonths > 0)
+    public void withdraw(double sum) {
+        if (endMonths > 0)
         {
+            try {
+                throw new DepositAccountNotClosedCentralBankServiceException("Невозможно вывести средства! Срок депозитного счета еще не подошел к концу!");
+            } catch (DepositAccountNotClosedCentralBankServiceException e) {
+                e.printStackTrace();
+            }
         }
         else
         {
-            if (_funds >= sum)
+            if (funds >= sum)
             {
-                _funds -= sum;
-                _operationsHistory.put((_operationsHistory.size() * 2) + 1, sum);
+                funds -= sum;
+                operationsHistory.put((operationsHistory.size() * 2) + 1, sum);
             }
             else
             {
+                try {
+                    throw new LackOfFundsCentralBankServiceException("Недостаточно средств!");
+                } catch (LackOfFundsCentralBankServiceException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
-    public void Deposit(double sum) {
-        _funds += sum;
-        _operationsHistory.put(_operationsHistory.size() * 2, sum);
+    public void deposit(double sum) {
+        funds += sum;
+        operationsHistory.put(operationsHistory.size() * 2, sum);
     }
 
-    public void AnnulTransaction(int id) {
+    public void annulTransaction(int id) {
         int idd = -1;
-        for (Integer key: _operationsHistory.keySet()) {
+        for (Integer key: operationsHistory.keySet()) {
             if (key == id) {
                 idd = key;
                 break;
@@ -98,13 +111,13 @@ public class DepositAccountImpl implements BankAccount {
         }
         if (idd % 2 == 0 && idd != -1)
         {
-            _funds -= _operationsHistory.get(idd);
-            _operationsHistory.put((_operationsHistory.size() * 2) + 1, _operationsHistory.get(idd));
+            funds -= operationsHistory.get(idd);
+            operationsHistory.put((operationsHistory.size() * 2) + 1, operationsHistory.get(idd));
         }
         else if(idd != -1)
         {
-            _funds += _operationsHistory.get(idd);
-            _operationsHistory.put(_operationsHistory.size() * 2, _operationsHistory.get(idd));
+            funds += operationsHistory.get(idd);
+            operationsHistory.put(operationsHistory.size() * 2, operationsHistory.get(idd));
         }
     }
 }

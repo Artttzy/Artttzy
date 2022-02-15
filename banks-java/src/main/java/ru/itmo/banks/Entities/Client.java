@@ -1,76 +1,82 @@
 package ru.itmo.banks.Entities;
 
+import ru.itmo.banks.Exceptions.CentralBankServiceException;
+import ru.itmo.banks.Exceptions.IncorrectPassportCentralBankServiceException;
 import ru.itmo.banks.Interfaces.BankAccount;
 import java.util.ArrayList;
 
 public class Client {
-    private String _name;
-    private String _surname;
-    private String _address;
-    private String _passport;
-    private String _phone;
-    private ArrayList<BankAccount> _accounts = new ArrayList<>();
-    private ArrayList<String> _notifications = new ArrayList<>();
+    private String name;
+    private String surname;
+    private String address;
+    private String passport;
+    private String phone;
+    private ArrayList<BankAccount> accounts = new ArrayList<>();
+    private ArrayList<String> notifications = new ArrayList<>();
 
     public Client() {}
 
     public Client(String name, String surname, String phone)
     {
-        _name = name;
-        _surname = surname;
-        _phone = phone;
+        this.name = name;
+        this.surname = surname;
+        this.phone = phone;
     }
 
     public ArrayList<String> get_notifications() {
-        return _notifications;
+        return notifications;
     }
 
     public String get_name() {
-        return _name;
+        return name;
     }
 
     public String get_surname() {
-        return _surname;
+        return surname;
     }
 
     public String get_passport() {
-        return _passport;
+        return passport;
     }
 
     public String get_phone() {
-        return _phone;
+        return phone;
     }
 
-    public ArrayList<BankAccount> get_accounts() {return _accounts;}
+    public ArrayList<BankAccount> get_accounts() {return accounts;}
 
-    public void AddAddress(String address)
+    public void addAddress(String address)
     {
-        _address = address;
+        this.address = address;
     }
 
-    public void AddPassport(String passport)
+    public void addPassport(String passport)
     {
         if (passport.length() != 10)
         {
-            throw new RuntimeException("Серия и номер паспорта должны вводится 10ю цифрами без пробелов!");
+            try {
+                throw new IncorrectPassportCentralBankServiceException("Серия и номер паспорта должны вводится 10ю цифрами без пробелов!");
+            } catch (IncorrectPassportCentralBankServiceException e) {
+                e.printStackTrace();
+            }
         }
 
-        _passport = passport;
+        this.passport = passport;
     }
 
-    public void AddAccount(BankAccount account)
+    public void addAccount(BankAccount account)
     {
-        _accounts.add(account);
+        accounts.add(account);
     }
 
-    public void AddNotification(String notification)
+    public void addNotification(String notification)
     {
-        _notifications.add(notification);
+        notifications.add(notification);
     }
 
-    public boolean CheckSuspicion()
+    public boolean checkSuspicion()
     {
-        if (_address == null || _passport == null)
+        if (address == null || passport == null)
         {
             return true;
         }

@@ -1,6 +1,7 @@
 package ru.itmo.banks;
 
 import ru.itmo.banks.Entities.Bank;
+import ru.itmo.banks.Exceptions.LackOfFundsCentralBankServiceException;
 import ru.itmo.banks.Interfaces.BankAccount;
 import ru.itmo.banks.Interfaces.CentralBankService;
 import ru.itmo.banks.Service.CentralBankServiceImpl;
@@ -14,26 +15,26 @@ public class ConsoleApplication {
     private static CentralBankService _centralBank;
     private static Scanner scanner = new Scanner(System.in);
 
-    public static void RegistrateBank() {
+    public static void registrateBank() {
         System.out.println("Введите название банка.");
         scanner.nextLine();
         String name = scanner.nextLine();
         System.out.println("Введите адрес банка.");
         String address = scanner.nextLine();
-        _centralBank.RegistrateBank(name, address);
+        _centralBank.registrateBank(name, address);
     }
 
-    public static void SetBankConditions() {
+    public static void setBankConditions() {
         System.out.println("Введите название банка, в котором вы бы хотели изменить условия.");
         scanner.nextLine();
         String bankName = scanner.nextLine();
-        var bank = _centralBank.FindBank(bankName);
+        var bank = _centralBank.findBank(bankName);
         System.out.println("Вы хотите изменить дебетовые условия?");
         String ans = scanner.next();
         if (ans.equals("Да")) {
             System.out.println("Введите процент на остаток.");
             double percent = scanner.nextDouble() / 100;
-            _centralBank.SetDebitConditions(bank, percent);
+            _centralBank.setDebitConditions(bank, percent);
         }
 
         System.out.println("Вы хотите изменить депозитные условия?");
@@ -51,7 +52,7 @@ public class ConsoleApplication {
                 percent = scanner.nextDouble();
             }
 
-            _centralBank.SetDepositConditions(bank, depositConditions);
+            _centralBank.setDepositConditions(bank, depositConditions);
         }
 
         System.out.println("Вы хотите изменить кредитные условия?");
@@ -59,24 +60,24 @@ public class ConsoleApplication {
         if (ans.equals("Да")) {
             System.out.println("Введите кредитную комиссию.");
             double comission = scanner.nextDouble() / 100;
-            _centralBank.SetDebitConditions(bank, comission);
+            _centralBank.setDebitConditions(bank, comission);
         }
     }
 
-    public static void RegistrateClient() {
+    public static void registrateClient() {
         System.out.println("Введите имя клиента.");
         String name = scanner.next();
         System.out.println("Введите фамилию клиента.");
         String surname = scanner.next();
         System.out.println("Введите номер телефона.");
         String phone = scanner.next();
-        _centralBank.RegistrateClient(name, surname, phone);
+        _centralBank.registrateClient(name, surname, phone);
     }
 
-    public static void AddClientInformation() {
+    public static void addClientInformation() {
         System.out.println("Введите номер телефона.");
         String phone = scanner.next();
-        var client = _centralBank.FindClient(phone);
+        var client = _centralBank.findClient(phone);
         if (client == null) throw new RuntimeException("Пользователь не найден!");
         System.out.println("Хотите добавить адрес клиента?");
         String ans = scanner.next();
@@ -84,7 +85,7 @@ public class ConsoleApplication {
             System.out.println("Введите адрес клиента.");
             scanner.nextLine();
             String address = scanner.nextLine();
-            _centralBank.AddClientAdress(client, address);
+            _centralBank.addClientAdress(client, address);
         }
 
         System.out.println("Хотите добавить паспорт клиента?");
@@ -92,20 +93,20 @@ public class ConsoleApplication {
         if (ans.equals("Да")) {
             System.out.println("Введите паспорт клиента.");
             String passport = scanner.next();
-            _centralBank.AddClientPassport(client, passport);
+            _centralBank.addClientPassport(client, passport);
         }
     }
 
-    public static void GetBanksList() {
+    public static void getBanksList() {
         for (Bank bank : _centralBank.get_banks()) {
             System.out.println(bank.get_id() + " " + bank.get_name() + " " + bank.get_address());
         }
     }
 
-    public static void GetClientsAccounts() {
+    public static void getClientsAccounts() {
         System.out.println("Введите номер телефона.");
         String phone = scanner.next();
-        var client = _centralBank.FindClient(phone);
+        var client = _centralBank.findClient(phone);
         if (client == null) throw new RuntimeException("Пользователь не найден!");
         for (BankAccount acc : client.get_accounts()) {
             System.out.println("Id счета: " + acc.get_id() + " Тип счета: " + acc.get_type() + " Банк счета: " + acc.get_bank().get_name() +
@@ -113,72 +114,72 @@ public class ConsoleApplication {
         }
     }
 
-    public static void OpenDebitAccount() {
+    public static void openDebitAccount() {
         System.out.println("Введите номер телефона.");
         String phone = scanner.next();
-        var client = _centralBank.FindClient(phone);
+        var client = _centralBank.findClient(phone);
         System.out.println("Введите название банка, в котором вы бы хотели открыть счет.");
         String bankName = scanner.next();
-        var bank = _centralBank.FindBank(bankName);
-        _centralBank.OpenDebitAccount(bank, client);
+        var bank = _centralBank.findBank(bankName);
+        _centralBank.openDebitAccount(bank, client);
     }
 
-    public static void OpenDepositAccount() {
+    public static void openDepositAccount() {
         System.out.println("Введите номер телефона.");
         String phone = scanner.next();
-        var client = _centralBank.FindClient(phone);
+        var client = _centralBank.findClient(phone);
         System.out.println("Введите название банка, в котором вы бы хотели открыть счет.");
         String bankName = scanner.next();
-        var bank = _centralBank.FindBank(bankName);
+        var bank = _centralBank.findBank(bankName);
         System.out.println("Укажите начальную сумму, с которой вы бы хотели открыть счет.");
         double sum = scanner.nextDouble();
         System.out.println("Укажите срок, на который вы хотите открыть счет, в месяцах.");
         int months = scanner.nextInt();
-        _centralBank.OpenDepositAccount(bank, client, sum, months);
+        _centralBank.openDepositAccount(bank, client, sum, months);
     }
 
-    public static void OpenCreditAccount() {
+    public static void openCreditAccount() {
         System.out.println("Введите номер телефона.");
         String phone = scanner.next();
-        var client = _centralBank.FindClient(phone);
+        var client = _centralBank.findClient(phone);
         System.out.println("Введите название банка, в котором вы бы хотели открыть счет.");
         String bankName = scanner.next();
-        var bank = _centralBank.FindBank(bankName);
+        var bank = _centralBank.findBank(bankName);
         System.out.println("Укажите лимит, с которым вы бы хотели открыть счет.");
         double limit = scanner.nextDouble();
-        _centralBank.OpenCreditAccount(bank, client, limit);
+        _centralBank.openCreditAccount(bank, client, limit);
     }
 
-    public static void WithdrawFunds() {
+    public static void withdrawFunds() throws LackOfFundsCentralBankServiceException {
         System.out.println("Введите id счета, с которого вы бы хотели вывести средства.");
         int id = scanner.nextInt();
         System.out.println("Введите сумму, которую вы бы хотели вывести.");
         double sum = scanner.nextDouble();
-        _centralBank.Withdraw(id, sum);
+        _centralBank.withdraw(id, sum);
     }
 
-    public static void DepositFunds() {
+    public static void depositFunds() {
         System.out.println("Введите id счета, на который вы бы хотели внести средства.");
         int id = scanner.nextInt();
         System.out.println("Введите сумму, которую вы бы хотели внести.");
         double sum = scanner.nextDouble();
-        _centralBank.Deposit(id, sum);
+        _centralBank.deposit(id, sum);
     }
 
-    public static void TransferFunds() {
+    public static void transferFunds() throws LackOfFundsCentralBankServiceException {
         System.out.println("Введите id счета, с которого вы бы хотели перевести средства.");
         int id1 = scanner.nextInt();
         System.out.println("Введите id счета, на который вы бы хотели перевести средства.");
         int id2 = scanner.nextInt();
         System.out.println("Введите сумму, которую вы бы хотели перевести.");
         double sum = scanner.nextDouble();
-        _centralBank.Transfer(id1, id2, sum);
+        _centralBank.transfer(id1, id2, sum);
     }
 
-    public static void GetOperationsHistory() {
+    public static void getOperationsHistory() {
         System.out.println("Введите id счета, историю операций которого вы бы хотели узнать.");
         int id = scanner.nextInt();
-        var operationsHistory = _centralBank.GetOperationsHistory(id);
+        var operationsHistory = _centralBank.getOperationsHistory(id);
         for (int opId : operationsHistory.keySet()) {
             String type;
             if (opId % 2 == 0) {
@@ -191,31 +192,31 @@ public class ConsoleApplication {
         }
     }
 
-    public static void AnnulOperation() {
+    public static void annulOperation() {
         System.out.println("Введите id счета, на котором нужно отменить операцию.");
         int id = scanner.nextInt();
         System.out.println("Введите id операции, которую вы хотите отменить.");
         int opId = scanner.nextInt();
-        _centralBank.AnnulOperation(id, opId);
+        _centralBank.annulOperation(id, opId);
     }
 
-    public static void RewindTime() {
+    public static void rewindTime() {
         System.out.println("Введите количество месяцев.");
         int months = scanner.nextInt();
-        _centralBank.RewindTime(months);
+        _centralBank.rewindTime(months);
     }
 
-    public static void GetNotifications() {
+    public static void getNotifications() {
         System.out.println("Введите номер телефона.");
         String phone = scanner.next();
-        var client = _centralBank.FindClient(phone);
-        ArrayList<String> notifications = _centralBank.GetNotifications(client);
+        var client = _centralBank.findClient(phone);
+        ArrayList<String> notifications = _centralBank.getNotifications(client);
         for (int i = 1; i <= notifications.size(); i++) {
             System.out.println(i + " " + notifications.get(i - 1));
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws LackOfFundsCentralBankServiceException {
         _centralBank = new CentralBankServiceImpl();
         int select = 0;
         while (select != 17) {
@@ -228,52 +229,52 @@ public class ConsoleApplication {
             select = (int) scanner.nextInt();
             switch (select) {
                 case 1:
-                    RegistrateBank();
+                    registrateBank();
                     break;
                 case 2:
-                    SetBankConditions();
+                    setBankConditions();
                     break;
                 case 3:
-                    RegistrateClient();
+                    registrateClient();
                     break;
                 case 4:
-                    AddClientInformation();
+                    addClientInformation();
                     break;
                 case 5:
-                    GetBanksList();
+                    getBanksList();
                     break;
                 case 6:
-                    GetClientsAccounts();
+                    getClientsAccounts();
                     break;
                 case 7:
-                    OpenDebitAccount();
+                    openDebitAccount();
                     break;
                 case 8:
-                    OpenDepositAccount();
+                    openDepositAccount();
                     break;
                 case 9:
-                    OpenCreditAccount();
+                    openCreditAccount();
                     break;
                 case 10:
-                    WithdrawFunds();
+                    withdrawFunds();
                     break;
                 case 11:
-                    DepositFunds();
+                    depositFunds();
                     break;
                 case 12:
-                    TransferFunds();
+                    transferFunds();
                     break;
                 case 13:
-                    GetOperationsHistory();
+                    getOperationsHistory();
                     break;
                 case 14:
-                    AnnulOperation();
+                    annulOperation();
                     break;
                 case 15:
-                    RewindTime();
+                    rewindTime();
                     break;
                 case 16:
-                    GetNotifications();
+                    getNotifications();
                     break;
                 case 17:
                     break;

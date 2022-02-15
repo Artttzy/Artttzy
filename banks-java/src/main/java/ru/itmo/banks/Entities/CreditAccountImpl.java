@@ -6,90 +6,90 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CreditAccountImpl implements BankAccount {
-    private int _id;
-    private double _limit;
-    private double _commission;
-    private double _funds = 0;
-    private Bank _bank;
-    private Client _client;
-    private String _type;
-    private Map<Integer, Double> _operationsHistory = new HashMap<>();
+    private int id;
+    private double limit;
+    private double commission;
+    private double funds = 0;
+    private Bank bank;
+    private Client client;
+    private String type;
+    private Map<Integer, Double> operationsHistory = new HashMap<>();
 
     public CreditAccountImpl(int id, double limit, double commission)
     {
-        _id = id;
-        _limit = limit;
-        _commission = commission;
-        _type = "Кредитный счет";
+        this.id = id;
+        this.limit = limit;
+        this.commission = commission;
+        this.type = "Кредитный счет";
     }
 
     public int get_id() {
-        return _id;
+        return id;
     }
 
     public String get_type() {
-        return _type;
+        return type;
     }
 
     public Map<Integer, Double> get_operationsHistory() {
-        return _operationsHistory;
+        return operationsHistory;
     }
 
     public Bank get_bank() {
-        return _bank;
+        return bank;
     }
 
     public void set_bank(Bank _bank) {
-        this._bank = _bank;
+        this.bank = _bank;
     }
 
     public Client get_client() {
-        return _client;
+        return client;
     }
 
     public void set_client(Client _client) {
-        this._client = _client;
+        this.client = _client;
     }
 
     public double get_funds() {
-        return _funds;
+        return funds;
     }
 
     public void set_funds(double _funds) {
-        this._funds = _funds;
+        this.funds = _funds;
     }
 
-    public void Withdraw(double sum) {
-        if (_funds < _limit)
+    public void withdraw(double sum) {
+        if (funds < limit)
         {
-            _funds -= sum * (1 + _commission);
-            _operationsHistory.put((_operationsHistory.size() * 2) + 1, sum * (1 + _commission));
+            funds -= sum * (1 + commission);
+            operationsHistory.put((operationsHistory.size() * 2) + 1, sum * (1 + commission));
         }
         else
         {
-            _funds -= sum;
-            _operationsHistory.put((_operationsHistory.size() * 2) + 1, sum);
+            funds -= sum;
+            operationsHistory.put((operationsHistory.size() * 2) + 1, sum);
         }
     }
 
 
-    public void Deposit(double sum) {
-        if (_funds < _limit)
+    public void deposit(double sum) {
+        if (funds < limit)
         {
-            _funds += sum * (1 - _commission);
-            _operationsHistory.put(_operationsHistory.size() * 2, sum * (1 - _commission));
+            funds += sum * (1 - commission);
+            operationsHistory.put(operationsHistory.size() * 2, sum * (1 - commission));
         }
         else
         {
-            _funds += sum;
-            _operationsHistory.put(_operationsHistory.size() * 2, sum);
+            funds += sum;
+            operationsHistory.put(operationsHistory.size() * 2, sum);
         }
     }
 
 
-    public void AnnulTransaction(int id) {
+    public void annulTransaction(int id) {
         int idd = -1;
-        for (Integer key: _operationsHistory.keySet()) {
+        for (Integer key: operationsHistory.keySet()) {
             if (key == id) {
                 idd = key;
                 break;
@@ -97,13 +97,13 @@ public class CreditAccountImpl implements BankAccount {
         }
         if (idd % 2 == 0 && idd != -1)
         {
-            _funds -= _operationsHistory.get(idd);
-            _operationsHistory.put((_operationsHistory.size() * 2) + 1, _operationsHistory.get(idd));
+            funds -= operationsHistory.get(idd);
+            operationsHistory.put((operationsHistory.size() * 2) + 1, operationsHistory.get(idd));
         }
         else if(idd != -1)
         {
-            _funds += _operationsHistory.get(idd);
-            _operationsHistory.put(_operationsHistory.size() * 2, _operationsHistory.get(idd));
+            funds += operationsHistory.get(idd);
+            operationsHistory.put(operationsHistory.size() * 2, operationsHistory.get(idd));
         }
     }
 }

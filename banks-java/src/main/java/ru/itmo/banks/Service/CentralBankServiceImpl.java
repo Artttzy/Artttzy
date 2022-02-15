@@ -1,7 +1,7 @@
 package ru.itmo.banks.Service;
 
 import ru.itmo.banks.Entities.*;
-import ru.itmo.banks.Exceptions.CentralBankServiceException;
+import ru.itmo.banks.Exceptions.*;
 import ru.itmo.banks.Interfaces.BankAccount;
 import ru.itmo.banks.Interfaces.CentralBankService;
 
@@ -11,74 +11,74 @@ import java.util.Map;
 
 public class CentralBankServiceImpl implements CentralBankService {
     private int lastid = 0;
-    private ArrayList<Bank> _banks = new ArrayList<Bank>();
-    private ArrayList<Client> _clients = new ArrayList<Client>();
-    private ArrayList<DebitAccountImpl> _debitAccounts = new ArrayList<DebitAccountImpl>();
-    private ArrayList<DepositAccountImpl> _depositAccounts = new ArrayList<DepositAccountImpl>();
-    private ArrayList<CreditAccountImpl> _creditAccounts = new ArrayList<CreditAccountImpl>();
-    private ArrayList<BankAccount> _accounts = new ArrayList<BankAccount>();
+    private ArrayList<Bank> banks = new ArrayList<Bank>();
+    private ArrayList<Client> clients = new ArrayList<Client>();
+    private ArrayList<DebitAccountImpl> debitAccounts = new ArrayList<DebitAccountImpl>();
+    private ArrayList<DepositAccountImpl> depositAccounts = new ArrayList<DepositAccountImpl>();
+    private ArrayList<CreditAccountImpl> creditAccounts = new ArrayList<CreditAccountImpl>();
+    private ArrayList<BankAccount> accounts = new ArrayList<BankAccount>();
 
     public ArrayList<Bank> get_banks() {
-        return _banks;
+        return banks;
     }
 
-    public Bank RegistrateBank(String name, String address)
+    public Bank registrateBank(String name, String address)
     {
         var bank = new Bank(lastid++, name, address);
-        _banks.add(bank);
+        banks.add(bank);
         return bank;
     }
 
-    public void SetDepositConditions(Bank bank, Map<Double, Double> percents)
+    public void setDepositConditions(Bank bank, Map<Double, Double> percents)
     {
-        bank.SetDepositConditions(percents);
+        bank.setDepositConditions(percents);
     }
 
-    public void SetDebitConditions(Bank bank, double percent)
+    public void setDebitConditions(Bank bank, double percent)
     {
-        bank.SetDebitConditions(percent);
+        bank.setDebitConditions(percent);
     }
 
-    public void SetCreditConditions(Bank bank, double commission)
+    public void setCreditConditions(Bank bank, double commission)
     {
-        bank.SetCreditConditions(commission);
+        bank.setCreditConditions(commission);
     }
 
-    public void SetSuspiciousConditions(Bank bank, double limit)
+    public void setSuspiciousConditions(Bank bank, double limit)
     {
-        bank.SetSuspiciousConditions(limit);
+        bank.setSuspiciousConditions(limit);
     }
 
-    public Client RegistrateClient(String name, String surname, String phone)
+    public Client registrateClient(String name, String surname, String phone)
     {
         var client = new Client(name, surname, phone);
-        _clients.add(client);
+        clients.add(client);
         return client;
     }
 
-    public void AddClientAdress(Client client, String address)
+    public void addClientAdress(Client client, String address)
     {
-        client.AddAddress(address);
+        client.addAddress(address);
     }
 
-    public void AddClientPassport(Client client, String passport)
+    public void addClientPassport(Client client, String passport)
     {
-        client.AddPassport(passport);
+        client.addPassport(passport);
     }
 
-    public void OpenDebitAccount(Bank bank, Client client)
+    public void openDebitAccount(Bank bank, Client client)
     {
-        var acc = new DebitAccountImpl(_accounts.size() + 1, bank.get_debitPercent());
-        _debitAccounts.add(acc);
-        _accounts.add(acc);
-        bank.AddDebitAccount(acc);
-        bank.AddClient(client);
-        client.AddAccount(acc);
+        var acc = new DebitAccountImpl(accounts.size() + 1, bank.get_debitPercent());
+        debitAccounts.add(acc);
+        accounts.add(acc);
+        bank.addDebitAccount(acc);
+        bank.addClient(client);
+        client.addAccount(acc);
         acc.set_bank(bank);
         acc.set_client(client);
     }
 
-    public void OpenDepositAccount(Bank bank, Client client, double sum, int months)
+    public void openDepositAccount(Bank bank, Client client, double sum, int months)
     {
         double percent = 0;
         for (Double key: bank.get_depositPercentDictionary().keySet()) {
@@ -87,70 +87,68 @@ public class CentralBankServiceImpl implements CentralBankService {
                 break;
             }
         }
-        var acc = new DepositAccountImpl(_accounts.size() + 1, sum, percent, months);
-        _depositAccounts.add(acc);
-        _accounts.add(acc);
-        bank.AddDepositAccount(acc);
-        bank.AddClient(client);
-        client.AddAccount(acc);
+        var acc = new DepositAccountImpl(accounts.size() + 1, sum, percent, months);
+        depositAccounts.add(acc);
+        accounts.add(acc);
+        bank.addDepositAccount(acc);
+        bank.addClient(client);
+        client.addAccount(acc);
         acc.set_bank(bank);
         acc.set_client(client);
     }
 
-    public void OpenCreditAccount(Bank bank, Client client, double limit)
+    public void openCreditAccount(Bank bank, Client client, double limit)
     {
-        var acc = new CreditAccountImpl(_accounts.size() + 1, limit, bank.get_creditCommission());
-        _creditAccounts.add(acc);
-        _accounts.add(acc);
-        bank.AddCreditAccount(acc);
-        bank.AddClient(client);
-        client.AddAccount(acc);
+        var acc = new CreditAccountImpl(accounts.size() + 1, limit, bank.get_creditCommission());
+        creditAccounts.add(acc);
+        accounts.add(acc);
+        bank.addCreditAccount(acc);
+        bank.addClient(client);
+        client.addAccount(acc);
         acc.set_bank(bank);
         acc.set_client(client);
     }
 
-    public void Withdraw(int accid, double sum)
-    {
-        for (var acc : _accounts) {
+    public void withdraw(int accid, double sum) throws LackOfFundsCentralBankServiceException {
+        for (var acc : accounts) {
             if (acc.get_id() == accid) {
-                CheckSuspicion(acc, sum);
-                acc.Withdraw(sum);
+                checkSuspicion(acc, sum);
+                acc.withdraw(sum);
                 break;
             }
         }
     }
 
-    public void Deposit(int accid, double sum)
+    public void deposit(int accid, double sum)
     {
-        for (var acc : _accounts) {
+        for (var acc : accounts) {
             if (acc.get_id() == accid) {
-                acc.Deposit(sum);
+                acc.deposit(sum);
                 break;
             }
         }
     }
 
-    public void Transfer(int accid1,  int accid2, double sum)
-    {
-        for (var acc1 : _accounts) {
+    public void transfer(int accid1,  int accid2, double sum) throws LackOfFundsCentralBankServiceException {
+        for (var acc1 : accounts) {
             if (acc1.get_id() == accid1) {
-                CheckSuspicion(acc1, sum);
-                acc1.Withdraw(sum);
+                checkSuspicion(acc1, sum);
+                acc1.withdraw(sum);
                 break;
             }
         }
-        for (var acc2 : _accounts) {
+        for (var acc2 : accounts) {
             if (acc2.get_id() == accid2) {
-                acc2.Deposit(sum);
+                acc2.deposit(sum);
                 break;
             }
         }
     }
 
-    public Map<Integer, Double> GetOperationsHistory(int accid)
+    public Map<Integer, Double> getOperationsHistory(int accid)
     {
         Map<Integer, Double> map = new HashMap<>();
-        for (var acc : _accounts) {
+        for (var acc : accounts) {
             if (acc.get_id() == accid) {
                 map = acc.get_operationsHistory();
                 break;
@@ -159,26 +157,26 @@ public class CentralBankServiceImpl implements CentralBankService {
         return map;
     }
 
-    public void AnnulOperation(int accid, int id)
+    public void annulOperation(int accid, int id)
     {
-        for (var acc : _accounts) {
+        for (var acc : accounts) {
             if (acc.get_id() == accid) {
-                acc.AnnulTransaction(id);
+                acc.annulTransaction(id);
                 break;
             }
         }
     }
 
-    public void RewindTime(int months)
+    public void rewindTime(int months)
     {
         for (int i = 0; i < months; i++)
         {
-            for (DebitAccountImpl debitAccount : _debitAccounts)
+            for (DebitAccountImpl debitAccount : debitAccounts)
             {
                 debitAccount.set_funds(debitAccount.get_funds() + (debitAccount.get_funds() * debitAccount.get_percent()));
             }
 
-            for (DepositAccountImpl depositAccount : _depositAccounts)
+            for (DepositAccountImpl depositAccount : depositAccounts)
             {
                 depositAccount.set_funds(depositAccount.get_funds() + (depositAccount.get_funds() * depositAccount.get_percent()));
                 depositAccount.set_endMonths(depositAccount.get_endMonths() - 1);
@@ -186,30 +184,30 @@ public class CentralBankServiceImpl implements CentralBankService {
         }
     }
 
-    public void CheckSuspicion(BankAccount acc, double sum)
+    public void checkSuspicion(BankAccount acc, double sum)
     {
-        if (acc.get_client().CheckSuspicion())
+        if (acc.get_client().checkSuspicion())
         {
             if (acc.get_bank().get_suspiciousLimit() < sum)
             {
                 try {
-                    throw new CentralBankServiceException("Аккаунт подозрительный и сумма вывода выше лимита!");
-                } catch (CentralBankServiceException e) {
-                    System.out.println(e.getMessage());
+                    throw new SuspiciousClientCentralBankServiceException("Аккаунт подозрительный и сумма вывода выше лимита!");
+                } catch (SuspiciousClientCentralBankServiceException e) {
+                    e.getMessage();
                 }
             }
         }
     }
 
-    public ArrayList<String> GetNotifications(Client client)
+    public ArrayList<String> getNotifications(Client client)
     {
         return client.get_notifications();
     }
 
-    public Client FindClient(String phone)
+    public Client findClient(String phone)
     {
         Client client = new Client();
-        for (Client _client : _clients) {
+        for (Client _client : clients) {
             if (phone.equals(_client.get_phone())) {
                 client = _client;
             }
@@ -221,17 +219,17 @@ public class CentralBankServiceImpl implements CentralBankService {
         else
         {
             try {
-                throw new CentralBankServiceException("Клиент не найден!");
-            } catch (CentralBankServiceException e) {
-                System.out.println(e.getMessage());
+                throw new ClientNotFoundCentralBankServiceException("Клиент не найден!");
+            } catch (ClientNotFoundCentralBankServiceException e) {
+                e.getMessage();
                 return null;
             }
         }
     }
 
-    public Bank FindBank(String name) {
+    public Bank findBank(String name) {
         Bank bank = new Bank();
-        for (Bank _bank : _banks) {
+        for (Bank _bank : banks) {
             if (name.equals(_bank.get_name())) {
                 bank = _bank;
             }
@@ -240,9 +238,9 @@ public class CentralBankServiceImpl implements CentralBankService {
             return bank;
         } else {
             try {
-                throw new CentralBankServiceException("Банк не найден!");
-            } catch (CentralBankServiceException e) {
-                System.out.println(e.getMessage());
+                throw new BankNotFoundCentralBankServiceException("Банк не найден!");
+            } catch (BankNotFoundCentralBankServiceException e) {
+                e.getMessage();
                 return null;
             }
         }
